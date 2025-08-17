@@ -18,8 +18,8 @@ import { setContext } from '@apollo/client/link/context';
 
 // 1️⃣ Nhost client setup
 export const nhost = new NhostClient({
-  subdomain: 'udgdpbnvrcomblphdnuq',
-  region: 'ap-south-1',
+  subdomain: process.env.REACT_APP_NHOST_SUBDOMAIN,
+  region: process.env.REACT_APP_NHOST_REGION,
 });
 
 // 2️⃣ HTTP link
