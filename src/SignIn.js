@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { nhost } from './nhost';
+import { useNavigate } from 'react-router-dom';
 
 function SignIn({ onSignedIn }) {
   const [email, setEmail] = useState('');
@@ -16,6 +17,11 @@ function SignIn({ onSignedIn }) {
       onSignedIn && onSignedIn(session.user);
     }
   };
+  const handleKeyPress = (e) => {
+    if (e.key === 'Enter') {
+      handleSignIn();
+    }
+  };
 
 return (
     <div style={{ padding: '20px', maxWidth: '400px', margin: 'auto' }}>
@@ -26,6 +32,7 @@ return (
           placeholder="Email"
           value={email}
           onChange={e => setEmail(e.target.value)}
+		  onKeyDown={handleKeyPress}
           style={{ display: 'block', margin: '10px 0', width: '100%' }}
           required
         />
@@ -34,10 +41,11 @@ return (
           placeholder="Password"
           value={password}
           onChange={e => setPassword(e.target.value)}
+		  onKeyDown={handleKeyPress}
           style={{ display: 'block', margin: '10px 0', width: '100%' }}
           required
         />
-        <button type="submit" style={{ padding: '10px 20px' }}>
+       <button onClick={handleSignIn} style={{ padding: '10px 20px' }}>
           Sign In
         </button>
       </form>
