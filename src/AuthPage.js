@@ -6,7 +6,18 @@ export default function AuthPage({ onSignedIn }) {
   const [isSignUp, setIsSignUp] = useState(false);
 
   return (
-    <div>
+    <div
+      style={{
+        minHeight: "100vh",
+        display: "flex",
+        flexDirection: "column",
+        justifyContent: "center",
+        alignItems: "center",
+        background: "#f5f5f5",
+        fontFamily: "Arial, sans-serif",
+        padding: "20px"
+      }}
+    >
       {isSignUp ? (
         <SignUp onSignedUp={() => setIsSignUp(false)} />
       ) : (
