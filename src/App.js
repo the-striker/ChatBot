@@ -1,15 +1,14 @@
 import React, { useState, useEffect } from "react";
 import { useAuthenticationStatus, useSignOut } from "@nhost/react";
 import ChatList from "./ChatList";
-import SignIn from "./SignIn";
-import SignUp from "./SignUp";
+import AuthPage from "./AuthPage";
+import ChatPage from "./ChatPage";
 import Messages from "./Messages";
 
 function App() {
   const { isAuthenticated } = useAuthenticationStatus();
   const { signOut } = useSignOut();
   const [selectedChat, setSelectedChat] = useState(null);
-  const [showSignUp, setShowSignUp] = useState(false);
   
   useEffect(() => {
     if (!isAuthenticated) {
@@ -18,26 +17,45 @@ function App() {
   }, [isAuthenticated]);
   
  if (!isAuthenticated) {
-    return (
-      <div>
-        {showSignUp ? <SignUp /> : <SignIn />}
-        <button onClick={() => setShowSignUp(!showSignUp)}>
-          {showSignUp ? "Already have an account? Sign In" : "New here? Sign Up"}
-        </button>
-      </div>
-    );
+    return <AuthPage onSignedIn={() => {}} />; 
   }
-  return (
-    <div>
-      <button onClick={signOut}>Sign Out</button>
-      {!selectedChat ? (
-        <ChatList onSelectChat={(id) => setSelectedChat(id)} />
-      ) : (
-        <div>
-			<button onClick={() => setSelectedChat(null)}>⬅ Back to Chats</button>
-			<Messages chatId={selectedChat} />
-		</div>
-      )}
+ return (
+    <div style={{ display: "flex", height: "100vh", fontFamily: "Arial, sans-serif" }}>
+      {/* Sidebar */}
+      <div style={{ width: "280px", borderRight: "1px solid #ddd", background: "#f9f9f9" }}>
+        <button 
+          onClick={signOut} 
+          style={{ width: "100%", padding: "10px", cursor: "pointer", background: "#f44336", color: "white", border: "none" }}
+        >
+          Sign Out
+        </button>
+        {!selectedChat && <ChatList onSelectChat={(id) => setSelectedChat(id)} />}
+      </div>
+
+      {/* Main Chat Area */}
+      <div style={{ flex: 1, display: "flex", flexDirection: "column" }}>
+        {selectedChat ? (
+          <div>
+            <button onClick={() => setSelectedChat(null)} style={{ margin: "10px" }}>
+              ⬅ Back to Chats
+            </button>
+            <Messages chatId={selectedChat} />
+          </div>
+        ) : (
+          <div
+            style={{
+              flex: 1,
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              color: "gray",
+              fontSize: "18px",
+            }}
+          >
+            👈 Select a chat to start messaging
+          </div>
+        )}
+      </div>
     </div>
   );
 }
