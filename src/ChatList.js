@@ -29,7 +29,6 @@ const CREATE_CHAT = gql`
 	const [newChatTitle, setNewChatTitle] = useState("");
 	const [createChat] = useMutation(CREATE_CHAT, {
 	update(cache, { data: { insert_chats_one } }) {
-    const existing = cache.readQuery({ query: GET_CHATS });
 	const userId = nhost.auth.getUser()?.id;
 	const existing = cache.readQuery({
       query: GET_CHATS,
