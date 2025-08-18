@@ -30,10 +30,16 @@ const CREATE_CHAT = gql`
 	const [createChat] = useMutation(CREATE_CHAT, {
 	update(cache, { data: { insert_chats_one } }) {
     const existing = cache.readQuery({ query: GET_CHATS });
+	const userId = nhost.auth.getUser()?.id;
+	const existing = cache.readQuery({
+      query: GET_CHATS,
+      variables: { userId },
+    });
 	
     if (existing && existing.chats) {
       cache.writeQuery({
         query: GET_CHATS,
+		variables: { userId },
         data: {
           chats: [insert_chats_one, ...existing.chats],
         },
@@ -41,13 +47,14 @@ const CREATE_CHAT = gql`
     } else {
       cache.writeQuery({
         query: GET_CHATS,
+		variables: { userId },
         data: {
           chats: [insert_chats_one],
         },
       });
     }
   },
-})
+});
 
 
   if (loading) return <p>Loading chats...</p>;
