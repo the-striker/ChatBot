@@ -6,25 +6,15 @@ export default function AuthPage({ onSignedIn }) {
   const [isSignUp, setIsSignUp] = useState(false);
 
   return (
-    <div
-      style={{
-        minHeight: "100vh",
-        display: "flex",
-        flexDirection: "column",
-        justifyContent: "center",
-        alignItems: "center",
-        background: "#f5f5f5",
-        fontFamily: "Arial, sans-serif",
-        padding: "20px"
-      }}
-    >
+    <div>
       {isSignUp ? (
         <SignUp onSignedUp={() => setIsSignUp(false)} />
       ) : (
         <SignIn onSignedIn={onSignedIn} />
       )}
 
-      <div style={{ textAlign: "center", marginTop: "20px" }}>
+      {/* Toggle button below the form */}
+      <div style={{ textAlign: "center", marginTop: "10px" }}>
         {isSignUp ? (
           <p>
             Already have an account?{" "}
