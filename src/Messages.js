@@ -191,6 +191,7 @@ if (loading) return <p>Loading messages...</p>;
           if (e.key === "Enter" && !e.shiftKey) {
             e.preventDefault();
             handleSend();
+			setMessageInput("");
           }
         }}
         style={{
