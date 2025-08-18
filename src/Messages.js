@@ -49,6 +49,9 @@ export default function Messages({ chatId }) {
   const [messageInput, setMessageInput] = useState("");
   const [insertUserMessage] = useMutation(INSERT_USER_MESSAGE);
   const [sendMessageAction] = useMutation(SEND_MESSAGE_ACTION);
+  const [waitingForResponse, setWaitingForResponse] = useState(false);
+  const [responseTimeout, setResponseTimeout] = useState(false);
+  const timeoutRef = useRef(null);
   const messagesEndRef = useRef(null);
   const scrollToBottom = () => {
 	messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -57,8 +60,18 @@ export default function Messages({ chatId }) {
     scrollToBottom();
   }, [data]);
 
-  if (loading) return <p>Loading messages...</p>;
-  if (error) return <p>Error: {error.message}</p>;
+  //if (loading) return <p>Loading messages...</p>;
+  //if (error) return <p>Error: {error.message}</p>;
+  useEffect(() => {
+    if (!data?.messages?.length || !waitingForResponse) return;
+
+    const lastMsg = data.messages[data.messages.length - 1];
+    if (lastMsg.role === "bot") {
+      setWaitingForResponse(false);
+      setResponseTimeout(false);
+      clearTimeout(timeoutRef.current);
+    }
+  }, [data, waitingForResponse]);
 
   const handleSend = async () => {
     if (!messageInput || messageInput.trim()==="") return;
@@ -68,6 +81,12 @@ export default function Messages({ chatId }) {
     await insertUserMessage({
       variables: { chat_id: chatId, content: messageInput.trim() }, // trim before sending
     });
+	
+	setWaitingForResponse(true);
+    setResponseTimeout(false);
+	timeoutRef.current = setTimeout(() => {
+      setResponseTimeout(true);
+    }, 5000);
     // Call Hasura Action -> triggers n8n
     await sendMessageAction({
       variables: { chat_id: chatId, content: messageInput.trim() },
@@ -79,7 +98,9 @@ export default function Messages({ chatId }) {
   }catch (err) {
     console.error("Error sending message:", err);
   }
-};;
+};
+if (loading) return <p>Loading messages...</p>;
+  if (error) return <p>Error: {error.message}</p>;
 
  return (
   <div style={{ display: "flex", flexDirection: "column", flex: 1 }}>
@@ -121,6 +142,41 @@ export default function Messages({ chatId }) {
           </div>
         </div>
       ))}
+	  {/* Loading / Timeout as chat bubbles */}
+        {waitingForResponse && (
+          <div style={{ display: "flex", justifyContent: "flex-start", margin: "5px 0" }}>
+            <div
+              style={{
+                backgroundColor: "#ECECEC",
+                padding: "8px 12px",
+                borderRadius: "15px",
+                maxWidth: "60%",
+                fontStyle: "italic",
+                color: "#555",
+              }}
+            >
+              ⏳ Waiting for response...
+            </div>
+          </div>
+        )}
+        {responseTimeout && (
+          <div style={{ display: "flex", justifyContent: "flex-start", margin: "5px 0" }}>
+            <div
+              style={{
+                backgroundColor: "#FEEFB3",
+                padding: "8px 12px",
+                borderRadius: "15px",
+                maxWidth: "60%",
+                fontStyle: "italic",
+                color: "#9C6500",
+              }}
+            >
+              ⚠ Response is taking longer than usual...
+            </div>
+          </div>
+        )}
+        <div ref={messagesEndRef} />
+      </div>
       <div ref={messagesEndRef} />
     </div>
 

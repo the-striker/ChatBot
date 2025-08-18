@@ -31,10 +31,24 @@ export default function ChatWindow({ chatId }) {
   });
 
   const [sendMessageAction] = useMutation(SEND_MESSAGE_ACTION);
-  
+  const [waitingForResponse, setWaitingForResponse] = useState(false);
+  const [responseTimeout, setResponseTimeout] = useState(false);
+  const timeoutRef = useRef(null);
   
   
   if (loading) return <p>Loading messages...</p>;
+  useEffect(() => {
+    if (!data?.messages?.length) return;
+
+    const lastMsg = data.messages[data.messages.length - 1];
+
+    // If last message is bot, stop waiting
+    if (lastMsg.role === "bot") {
+      setWaitingForResponse(false);
+      setResponseTimeout(false);
+      clearTimeout(timeoutRef.current);
+    }
+  }, [data]);
 
 
   
@@ -46,7 +60,11 @@ export default function ChatWindow({ chatId }) {
     // Get current logged-in user
     const user = nhost.auth.getUser();
 	
-
+	setWaitingForResponse(true);
+    setResponseTimeout(false);
+	timeoutRef.current = setTimeout(() => {
+      setResponseTimeout(true);
+    }, 5000);
 
     // Call Hasura Action -> triggers n8n
     await sendMessageAction({
@@ -63,6 +81,8 @@ return (
             <b>{msg.role === "user" ? "You" : "Bot"}:</b> {msg.content}
           </p>
         ))}
+		{waitingForResponse && <p><i>⏳ Waiting for response...</i></p>}
+        {responseTimeout && <p style={{ color: "red" }}><i>⚠ Response is taking longer than usual...</i></p>}
       </div>
       <button onClick={handleSend}>Send Message</button>
       <button onClick={() => window.location.reload()}>⬅ Back to Chats</button>
