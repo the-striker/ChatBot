@@ -1,6 +1,6 @@
 import { gql, useSubscription, useMutation } from "@apollo/client";
 import {nhost} from "./nhost";
-import { useState } from "react"; 
+import { useState, useRef ,useEffect } from "react"; 
 
 const GET_MESSAGES = gql`
   subscription GetMessages($chat_id: uuid!) {
@@ -35,17 +35,20 @@ export default function ChatWindow({ chatId }) {
   const [responseTimeout, setResponseTimeout] = useState(false);
   const timeoutRef = useRef(null);
   
+  
   if (loading) return <p>Loading messages...</p>;
   useEffect(() => {
-    if (!waitingForResponse || !data?.messages?.length) return;
-	const lastMsg = data.messages[data.messages.length - 1];
+    if (!data?.messages?.length) return;
+
+    const lastMsg = data.messages[data.messages.length - 1];
+
+    // If last message is bot, stop waiting
     if (lastMsg.role === "bot") {
-      // ✅ Bot responded, stop waiting
       setWaitingForResponse(false);
       setResponseTimeout(false);
       clearTimeout(timeoutRef.current);
     }
-  }, [data, waitingForResponse]);
+  }, [data]);
 
   
 
@@ -66,8 +69,7 @@ export default function ChatWindow({ chatId }) {
     await sendMessageAction({
       variables: { chat_id: chatId, content },
     });
-	clearTimeout(timeoutId);
-    setWaitingForResponse(false);
+	
   };
 return (
     <div>
