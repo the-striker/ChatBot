@@ -1,7 +1,6 @@
 // ChatList.js
 import React, { useState } from "react";
 import { useQuery, gql, useMutation } from "@apollo/client";
-import Messages from "./Messages";
 import { nhost } from './nhost';
 
 const GET_CHATS = gql`

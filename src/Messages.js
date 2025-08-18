@@ -61,7 +61,7 @@ export default function Messages({ chatId }) {
   const handleSend = async () => {
     if (!messageInput) return;
 	
-	const user = nhost.auth.getUser();
+	
 	
 	await insertUserMessage({
     variables: { chat_id: chatId, content: messageInput },

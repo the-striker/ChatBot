@@ -3,7 +3,6 @@ import ReactDOM from 'react-dom/client';
 import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
-import { NhostClient, NhostProvider } from "@nhost/react";
 import './index.css';
 import { ApolloProviderWrapper } from './nhost'; 
 
