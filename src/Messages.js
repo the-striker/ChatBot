@@ -3,6 +3,8 @@ import React, { useState, useEffect, useRef } from "react";
 import { useSubscription, useMutation } from "@apollo/client";
 import { gql } from "@apollo/client";
 import { nhost } from "./nhost";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 
 const GET_MESSAGES = gql`
   subscription GetMessages($chatId: uuid!) {
@@ -108,7 +110,9 @@ export default function Messages({ chatId }) {
                 maxWidth: "60%",
               }}
             >
+			<ReactMarkdown remarkPlugins={[remarkGfm]}>
               {msg.content}
+			  </ReactMarkdown>
             </div>
           </div>
         ))}

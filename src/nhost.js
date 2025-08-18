@@ -63,7 +63,7 @@ const splitLink = split(
     );
   },
   wsLink,
-  authLink.concat(httpLink) // ✅ inject auth here
+  authLink.concat(httpLink) 
 );
 
 // 6️⃣ Apollo client

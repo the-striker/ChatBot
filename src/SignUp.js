@@ -20,23 +20,27 @@ function SignUp({ onSignedUp }) {
   return (
     <div style={{ padding: '20px', maxWidth: '400px', margin: 'auto' }}>
       <h2>Sign Up</h2>
-      <input
-        type="email"
-        placeholder="Email"
-        value={email}
-        onChange={e => setEmail(e.target.value)}
-        style={{ display: 'block', margin: '10px 0', width: '100%' }}
-      />
-      <input
-        type="password"
-        placeholder="Password"
-        value={password}
-        onChange={e => setPassword(e.target.value)}
-        style={{ display: 'block', margin: '10px 0', width: '100%' }}
-      />
-      <button onClick={handleSignUp} style={{ padding: '10px 20px' }}>
-        Sign Up
-      </button>
+      <form onSubmit={handleSignUp}>
+        <input
+          type="email"
+          placeholder="Email"
+          value={email}
+          onChange={e => setEmail(e.target.value)}
+          style={{ display: 'block', margin: '10px 0', width: '100%' }}
+          required
+        />
+        <input
+          type="password"
+          placeholder="Password"
+          value={password}
+          onChange={e => setPassword(e.target.value)}
+          style={{ display: 'block', margin: '10px 0', width: '100%' }}
+          required
+        />
+        <button type="submit" style={{ padding: '10px 20px' }}>
+          Sign Up
+        </button>
+      </form>
       <p>{message}</p>
     </div>
   );
