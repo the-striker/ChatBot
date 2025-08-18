@@ -142,45 +142,45 @@ if (loading) return <p>Loading messages...</p>;
           </div>
         </div>
       ))}
-	  {/* Loading / Timeout as chat bubbles */}
-        {waitingForResponse && (
-          <div style={{ display: "flex", justifyContent: "flex-start", margin: "5px 0" }}>
-            <div
-              style={{
-                backgroundColor: "#ECECEC",
-                padding: "8px 12px",
-                borderRadius: "15px",
-                maxWidth: "60%",
-                fontStyle: "italic",
-                color: "#555",
-              }}
-            >
-              ⏳ Waiting for response...
-            </div>
+
+      {/* Waiting / Timeout messages */}
+      {waitingForResponse && (
+        <div style={{ display: "flex", justifyContent: "flex-start", margin: "5px 0" }}>
+          <div
+            style={{
+              backgroundColor: "#ECECEC",
+              padding: "8px 12px",
+              borderRadius: "15px",
+              maxWidth: "60%",
+              fontStyle: "italic",
+              color: "#555",
+            }}
+          >
+            ⏳ Waiting for response...
           </div>
-        )}
-        {responseTimeout && (
-          <div style={{ display: "flex", justifyContent: "flex-start", margin: "5px 0" }}>
-            <div
-              style={{
-                backgroundColor: "#FEEFB3",
-                padding: "8px 12px",
-                borderRadius: "15px",
-                maxWidth: "60%",
-                fontStyle: "italic",
-                color: "#9C6500",
-              }}
-            >
-              ⚠ Response is taking longer than usual...
-            </div>
+        </div>
+      )}
+      {responseTimeout && (
+        <div style={{ display: "flex", justifyContent: "flex-start", margin: "5px 0" }}>
+          <div
+            style={{
+              backgroundColor: "#FEEFB3",
+              padding: "8px 12px",
+              borderRadius: "15px",
+              maxWidth: "60%",
+              fontStyle: "italic",
+              color: "#9C6500",
+            }}
+          >
+            ⚠ Response is taking longer than usual...
           </div>
-        )}
-        <div ref={messagesEndRef} />
-      </div>
+        </div>
+      )}
+
       <div ref={messagesEndRef} />
     </div>
 
-    {/* Input */}
+    {/* Input section */}
     <div style={{ display: "flex", padding: "10px", borderTop: "1px solid #ddd" }}>
       <input
         type="text"
@@ -209,5 +209,6 @@ if (loading) return <p>Loading messages...</p>;
     </div>
   </div>
 );
+
 
 }
