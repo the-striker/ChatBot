@@ -33,8 +33,21 @@ export default function ChatWindow({ chatId }) {
   const [sendMessageAction] = useMutation(SEND_MESSAGE_ACTION);
   const [waitingForResponse, setWaitingForResponse] = useState(false);
   const [responseTimeout, setResponseTimeout] = useState(false);
-
+  const timeoutRef = useRef(null);
+  
   if (loading) return <p>Loading messages...</p>;
+  useEffect(() => {
+    if (!waitingForResponse || !data?.messages?.length) return;
+	const lastMsg = data.messages[data.messages.length - 1];
+    if (lastMsg.role === "bot") {
+      // ✅ Bot responded, stop waiting
+      setWaitingForResponse(false);
+      setResponseTimeout(false);
+      clearTimeout(timeoutRef.current);
+    }
+  }, [data, waitingForResponse]);
+
+  
 
   const handleSend = async () => {
     const content = prompt("Enter your message:");
@@ -45,8 +58,7 @@ export default function ChatWindow({ chatId }) {
 	setWaitingForResponse(true);
     setResponseTimeout(false);
 
-    // ✅ After 5s, show warning
-    const timeoutId = setTimeout(() => {
+    timeoutRef.current = setTimeout(() => {
       setResponseTimeout(true);
     }, 5000);
 
