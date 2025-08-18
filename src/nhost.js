@@ -24,7 +24,7 @@ export const nhost = new NhostClient({
 
 // 2️⃣ HTTP link
 const httpLink = new HttpLink({
-  uri: 'https://udgdpbnvrcomblphdnuq.hasura.ap-south-1.nhost.run/v1/graphql',
+  uri: process.env.REACT_APP_HASURA_HTTP_URL,
 });
 
 // 3️⃣ Auth link (adds JWT to headers)
@@ -41,7 +41,7 @@ const authLink = setContext(async (_, { headers }) => {
 // 4️⃣ Subscription link (WebSocket)
 const wsLink = new GraphQLWsLink(
   createClient({
-    url: 'wss://udgdpbnvrcomblphdnuq.hasura.ap-south-1.nhost.run/v1/graphql',
+    url: process.env.REACT_APP_HASURA_WS_URL,
     connectionParams: async () => {
       const token = await nhost.auth.getAccessToken();
       return {
