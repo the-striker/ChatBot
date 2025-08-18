@@ -122,6 +122,12 @@ export default function Messages({ chatId }) {
           placeholder="Type a message..."
           value={messageInput}
           onChange={(e) => setMessageInput(e.target.value)}
+			onKeyDown={(e) => {
+				if (e.key === "Enter" && !e.shiftKey) {
+				e.preventDefault();
+				handleSend();
+				}
+			}}
           style={{
             flex: 1,
             padding: "8px",
