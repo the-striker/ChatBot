@@ -19,29 +19,74 @@ function SignUp({ onSignedUp }) {
     }
   };
 
-  return (
-    <div style={{ padding: '20px', maxWidth: '400px', margin: 'auto' }}>
-      <h2>Sign Up</h2>
-	  <form onSubmit={handleSignUp}>
-      <input
-        type="email"
-        placeholder="Email"
-        value={email}
-        onChange={e => setEmail(e.target.value)}
-        style={{ display: 'block', margin: '10px 0', width: '100%' }}
-      />
-      <input
-        type="password"
-        placeholder="Password"
-        value={password}
-        onChange={e => setPassword(e.target.value)}
-        style={{ display: 'block', margin: '10px 0', width: '100%' }}
-      />
-      <button type="submit" style={{ padding: '10px 20px' }}>
-        Sign Up
-      </button>
-	  </form>
-      <p>{message}</p>
+ return (
+    <div style={{
+      minHeight: '100vh',
+      display: 'flex',
+      justifyContent: 'center',
+      alignItems: 'center',
+      background: '#f5f5f5',
+      fontFamily: 'Arial, sans-serif'
+    }}>
+      <div style={{
+        background: 'white',
+        padding: '40px 30px',
+        borderRadius: '12px',
+        boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
+        width: '100%',
+        maxWidth: '400px'
+      }}>
+        <h2 style={{ textAlign: 'center', marginBottom: '30px' }}>Sign Up</h2>
+        <form onSubmit={handleSignUp}>
+          <input
+            type="email"
+            placeholder="Email"
+            value={email}
+            onChange={e => setEmail(e.target.value)}
+            required
+            style={{
+              width: '100%',
+              padding: '12px',
+              marginBottom: '15px',
+              borderRadius: '6px',
+              border: '1px solid #ccc',
+              fontSize: '14px'
+            }}
+          />
+          <input
+            type="password"
+            placeholder="Password"
+            value={password}
+            onChange={e => setPassword(e.target.value)}
+            required
+            style={{
+              width: '100%',
+              padding: '12px',
+              marginBottom: '20px',
+              borderRadius: '6px',
+              border: '1px solid #ccc',
+              fontSize: '14px'
+            }}
+          />
+          <button type="submit" style={{
+            width: '100%',
+            padding: '12px',
+            background: '#2196F3',
+            color: 'white',
+            fontSize: '16px',
+            border: 'none',
+            borderRadius: '6px',
+            cursor: 'pointer',
+            transition: '0.3s'
+          }}
+          onMouseOver={e => e.target.style.background = '#1976D2'}
+          onMouseOut={e => e.target.style.background = '#2196F3'}
+          >
+            Sign Up
+          </button>
+        </form>
+        {message && <p style={{ marginTop: '15px', textAlign: 'center' }}>{message}</p>}
+      </div>
     </div>
   );
 }
