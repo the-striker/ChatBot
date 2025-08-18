@@ -14,7 +14,7 @@ const GET_CHATS = gql`
 `;
 const CREATE_CHAT = gql`
   mutation CreateChat($title: String!) {
-    insert_chats_one(object: { title: $title }) {
+    insert_chats_one(object: { title: $title}) {
       id
       title
       created_at
@@ -56,8 +56,8 @@ const CREATE_CHAT = gql`
 });
 
 
-  if (loading) return <p>Loading chats...</p>;
-  if (error) return <p>Error: {error.message}</p>;
+  if (loading) return <p className="text-gray-500 p-4">Loading chats...</p>;
+  if (error) return <p className="text-red-500 p-4">Error: {error.message}</p>;
   
   const handleNewChat = async () => {
     const title = prompt("Enter chat title:");
@@ -72,25 +72,66 @@ const CREATE_CHAT = gql`
   setNewChatTitle(''); // clear input field
 };
   
+return (
+    <div style={{ width: "280px", borderRight: "1px solid #ddd", height: "100vh", display: "flex", flexDirection: "column" }}>
+      {/* Header */}
+      <div style={{ padding: "12px", borderBottom: "1px solid #ddd", display: "flex", justifyContent: "space-between" }}>
+        <h3 style={{ margin: 0, fontSize: "16px" }}>💬 Chats</h3>
+        <button onClick={handleNewChat} style={{ fontSize: "14px", padding: "4px 8px", cursor: "pointer" }}>
+          ➕
+        </button>
+      </div>
 
-  return (
-    <div>
-      <h2>Your Chats</h2>
-	  <button onClick={handleNewChat}>➕ New Chat</button>
-      <ul>
+      {/* Chat list */}
+      <ul style={{ listStyle: "none", padding: 0, margin: 0, flex: 1, overflowY: "auto" }}>
         {data.chats.map((chat) => (
-          <li key={chat.id}>
-            <button onClick={() => onSelectChat(chat.id)}>{chat.title}</button>
+          <li
+            key={chat.id}
+            style={{
+              borderBottom: "1px solid #f0f0f0",
+              padding: "10px 12px",
+              cursor: "pointer",
+            }}
+            onClick={() => onSelectChat(chat.id)}
+          >
+            <div style={{ fontWeight: "500", fontSize: "14px" }}>{chat.title || "Untitled Chat"}</div>
+            <div style={{ fontSize: "12px", color: "gray" }}>
+              {new Date(chat.created_at).toLocaleString()}
+            </div>
           </li>
         ))}
       </ul>
-	  <input
-  type="text"
-  placeholder="New chat title..."
-  value={newChatTitle}
-  onChange={(e) => setNewChatTitle(e.target.value)}
-/>
-<button onClick={handleCreateChat}>Create Chat</button>
+
+      {/* Input for new chat */}
+      <div style={{ padding: "10px", borderTop: "1px solid #ddd" }}>
+        <input
+          type="text"
+          placeholder="New chat title..."
+          value={newChatTitle}
+          onChange={(e) => setNewChatTitle(e.target.value)}
+          style={{
+            width: "100%",
+            padding: "6px",
+            marginBottom: "6px",
+            border: "1px solid #ccc",
+            borderRadius: "4px",
+          }}
+        />
+        <button
+          onClick={handleCreateChat}
+          style={{
+            width: "100%",
+            padding: "6px",
+            border: "none",
+            background: "#4CAF50",
+            color: "white",
+            borderRadius: "4px",
+            cursor: "pointer",
+          }}
+        >
+          Create Chat
+        </button>
+      </div>
     </div>
   );
 }

@@ -61,91 +61,97 @@ export default function Messages({ chatId }) {
   if (error) return <p>Error: {error.message}</p>;
 
   const handleSend = async () => {
-    if (!messageInput) return;
+    if (!messageInput || messageInput.trim()==="") return;
 	
 	
-	
-	await insertUserMessage({
-    variables: { chat_id: chatId, content: messageInput },
-  });
+	 try {
+    await insertUserMessage({
+      variables: { chat_id: chatId, content: messageInput.trim() }, // trim before sending
+    });
     // Call Hasura Action -> triggers n8n
     await sendMessageAction({
-      variables: { chat_id: chatId, content: messageInput },
+      variables: { chat_id: chatId, content: messageInput.trim() },
     }).catch(console.error);
 	
 
     // Clear input box
     setMessageInput("");
-  };
+  }catch (err) {
+    console.error("Error sending message:", err);
+  }
+};;
 
-  return (
-    <div>
-      <h2>Messages</h2>
+ return (
+  <div style={{ display: "flex", flexDirection: "column", flex: 1 }}>
+    {/* Header */}
+    <div style={{ padding: "10px", borderBottom: "1px solid #ddd" }}>
+      <h2 style={{ margin: 0, fontSize: "16px" }}>Messages</h2>
+    </div>
 
-      {/* 9️⃣ Messages container */}
-      <div
-        style={{
-          border: "1px solid gray",
-          padding: "10px",
-          height: "400px",
-          overflowY: "scroll",
-          display: "flex",
-          flexDirection: "column",
-        }}
-      >
-        {data.messages.map((msg) => (
+    {/* Messages container */}
+    <div
+      style={{
+        flex: 1,
+        padding: "10px",
+        overflowY: "auto",
+        display: "flex",
+        flexDirection: "column",
+      }}
+    >
+      {data.messages.map((msg) => (
+        <div
+          key={msg.id}
+          style={{
+            display: "flex",
+            justifyContent: msg.role === "user" ? "flex-end" : "flex-start",
+            margin: "5px 0",
+          }}
+        >
           <div
-            key={msg.id}
             style={{
-              display: "flex",
-              justifyContent: msg.role === "user" ? "flex-end" : "flex-start",
-              margin: "5px 0",
+              backgroundColor: msg.role === "user" ? "#DCF8C6" : "#ECECEC",
+              padding: "8px 12px",
+              borderRadius: "15px",
+              maxWidth: "60%",
             }}
           >
-            <div
-              style={{
-                backgroundColor: msg.role === "user" ? "#DCF8C6" : "#ECECEC",
-                padding: "8px 12px",
-                borderRadius: "15px",
-                maxWidth: "60%",
-              }}
-            >
-			<ReactMarkdown remarkPlugins={[remarkGfm]}>
+            <ReactMarkdown remarkPlugins={[remarkGfm]}>
               {msg.content}
-			  </ReactMarkdown>
-            </div>
+            </ReactMarkdown>
           </div>
-        ))}
-        <div ref={messagesEndRef} /> {/* 10️⃣ Auto-scroll target */}
-      </div>
-
-      {/* 11️⃣ Input & Send button */}
-      <div style={{ display: "flex", marginTop: "10px" }}>
-        <input
-          type="text"
-          placeholder="Type a message..."
-          value={messageInput}
-          onChange={(e) => setMessageInput(e.target.value)}
-			onKeyDown={(e) => {
-				if (e.key === "Enter" && !e.shiftKey) {
-				e.preventDefault();
-				handleSend();
-				}
-			}}
-          style={{
-            flex: 1,
-            padding: "8px",
-            borderRadius: "5px",
-            border: "1px solid #ccc",
-          }}
-        />
-        <button
-          onClick={handleSend}
-          style={{ padding: "8px 16px", marginLeft: "10px" }}
-        >
-          Send
-        </button>
-      </div>
+        </div>
+      ))}
+      <div ref={messagesEndRef} />
     </div>
-  );
+
+    {/* Input */}
+    <div style={{ display: "flex", padding: "10px", borderTop: "1px solid #ddd" }}>
+      <input
+        type="text"
+        placeholder="Type a message..."
+        value={messageInput}
+        onChange={(e) => setMessageInput(e.target.value)}
+        onKeyDown={(e) => {
+          if (e.key === "Enter" && !e.shiftKey) {
+            e.preventDefault();
+            handleSend();
+          }
+        }}
+        style={{
+          flex: 1,
+          padding: "8px",
+          borderRadius: "5px",
+          border: "1px solid #ccc",
+        }}
+      />
+      <button
+        onClick={handleSend}
+        style={{ padding: "8px 16px", marginLeft: "10px" }}
+      >
+        Send
+      </button>
+    </div>
+  </div>
+);
+
 }

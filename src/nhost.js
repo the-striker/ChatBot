@@ -19,12 +19,15 @@ import { setContext } from '@apollo/client/link/context';
 // 1️⃣ Nhost client setup
 export const nhost = new NhostClient({
   subdomain: process.env.REACT_APP_NHOST_SUBDOMAIN,
+  //subdomain: 'udgdpbnvrcomblphdnuq',
   region: process.env.REACT_APP_NHOST_REGION,
+   //region: 'ap-south-1',
 });
 
 // 2️⃣ HTTP link
 const httpLink = new HttpLink({
   uri: process.env.REACT_APP_HASURA_HTTP_URL,
+  //uri: 'https://udgdpbnvrcomblphdnuq.hasura.ap-south-1.nhost.run/v1/graphql',
 });
 
 // 3️⃣ Auth link (adds JWT to headers)
@@ -42,6 +45,7 @@ const authLink = setContext(async (_, { headers }) => {
 const wsLink = new GraphQLWsLink(
   createClient({
     url: process.env.REACT_APP_HASURA_WS_URL,
+	//url: 'wss://udgdpbnvrcomblphdnuq.hasura.ap-south-1.nhost.run/v1/graphql',
     connectionParams: async () => {
       const token = await nhost.auth.getAccessToken();
       return {
