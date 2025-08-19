@@ -21,7 +21,7 @@ export const nhost = new NhostClient({
   subdomain: process.env.REACT_APP_NHOST_SUBDOMAIN,
   //subdomain: 'udgdpbnvrcomblphdnuq',
   region: process.env.REACT_APP_NHOST_REGION,
-  // region: 'ap-south-1',
+   //region: 'ap-south-1',
 });
 
 // 2️⃣ HTTP link

@@ -1,7 +1,5 @@
-// Messages.js
 import React, { useState, useEffect, useRef } from "react";
-import { useSubscription, useMutation } from "@apollo/client";
-import { gql } from "@apollo/client";
+import { useSubscription, useMutation, gql } from "@apollo/client";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 
@@ -46,75 +44,118 @@ export default function Messages({ chatId }) {
     variables: { chatId },
   });
 
-  const [messageInput, setMessageInput] = useState("");
   const [insertUserMessage] = useMutation(INSERT_USER_MESSAGE);
   const [sendMessageAction] = useMutation(SEND_MESSAGE_ACTION);
+
+  const [messageInput, setMessageInput] = useState("");
   const [waitingForResponse, setWaitingForResponse] = useState(false);
   const [responseTimeout, setResponseTimeout] = useState(false);
   const [isUserMessageSent, setIsUserMessageSent] = useState(false);
-  const timeoutRef = useRef(null);
+  const [lastUserMessageId, setLastUserMessageId] = useState(null);
 
+  const timeoutRef = useRef(null);
   const messagesContainerRef = useRef(null);
 
-  const scrollToBottom = () => {
-    const container = messagesContainerRef.current;
-    if (container) container.scrollTop = container.scrollHeight;
-  };
-
+  // Scroll to bottom on new messages or waiting indicators
   useEffect(() => {
-    scrollToBottom();
-  }, [data?.messages, waitingForResponse]);
-
-  useEffect(() => {
-    if (!data?.messages?.length || !waitingForResponse) return;
-
-    const lastMsg = data.messages[data.messages.length - 1];
-
-    if (isUserMessageSent && lastMsg.role === "bot") {
-      setWaitingForResponse(false);
-      setResponseTimeout(false);
-      setIsUserMessageSent(false);
-      clearTimeout(timeoutRef.current);
+    if (messagesContainerRef.current) {
+      messagesContainerRef.current.scrollTop =
+        messagesContainerRef.current.scrollHeight;
     }
-  }, [data?.messages, waitingForResponse, isUserMessageSent]);
+  }, [data?.messages, waitingForResponse, responseTimeout]);
+
+  // Detect bot reply → stop waiting
+  useEffect(() => {
+  if (!data?.messages?.length || !lastUserMessageId) return;
+
+  const lastMsg = data.messages[data.messages.length - 1];
+  const lastUserMsg = data.messages.find((m) => m.id === lastUserMessageId);
+
+  // Only stop waiting if bot replied after the user’s last message
+  if (
+    lastMsg.role === "bot" &&
+    lastUserMsg &&
+    new Date(lastMsg.created_at) > new Date(lastUserMsg.created_at)
+  ) {
+    setWaitingForResponse(false);
+    setResponseTimeout(false);
+    setIsUserMessageSent(false);
+    setLastUserMessageId(null);
+    clearTimeout(timeoutRef.current);
+  }
+}, [data?.messages, lastUserMessageId]);
 
   const handleSend = () => {
     if (!messageInput.trim()) return;
 
     const contentToSend = messageInput.trim();
-
-    // Clear input immediately
-    setMessageInput("");
-
-    // Show waiting immediately
+    setMessageInput(""); // clear input immediately
     setWaitingForResponse(true);
     setResponseTimeout(false);
     setIsUserMessageSent(true);
 
-    // Start timeout for slow response
+    // timeout fallback
     timeoutRef.current = setTimeout(() => {
       setResponseTimeout(true);
     }, 5000);
 
-    // Fire async mutations
-    insertUserMessage({ variables: { chat_id: chatId, content: contentToSend } }).catch(console.error);
-    sendMessageAction({ variables: { chat_id: chatId, content: contentToSend } }).catch(console.error);
+    // send both mutations in parallel
+    insertUserMessage({
+  variables: { chat_id: chatId, content: contentToSend },
+})
+  .then((res) => {
+    if (res?.data?.insert_messages_one?.id) {
+      setLastUserMessageId(res.data.insert_messages_one.id);
+    }
+  })
+  .catch(console.error);
+
+    sendMessageAction({
+      variables: { chat_id: chatId, content: contentToSend },
+    }).catch(console.error);
   };
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", flex: 1, background: "#121212", color: "#E5E5E5", minHeight: 0 }}>
+    <div
+      style={{
+        display: "flex",
+        flexDirection: "column",
+        flex: 1,
+        background: "#121212",
+        color: "#E5E5E5",
+        minHeight: 0,
+      }}
+    >
       {/* Messages container */}
       <div
         ref={messagesContainerRef}
-        style={{ flex: 1, padding: "12px", overflowY: "auto", display: "flex", flexDirection: "column", gap: "5px", minHeight: 0 }}
+        style={{
+          flex: 1,
+          padding: "12px",
+          overflowY: "auto",
+          display: "flex",
+          flexDirection: "column",
+          gap: "5px",
+          minHeight: 0,
+        }}
       >
-        {loading && <div style={{ color: "#AAA", padding: "12px" }}>Loading messages...</div>}
-        {error && <div style={{ color: "red", padding: "12px" }}>Error: {error.message}</div>}
+        {loading && (
+          <div style={{ color: "#AAA", padding: "12px" }}>Loading messages...</div>
+        )}
+        {error && (
+          <div style={{ color: "red", padding: "12px" }}>
+            Error: {error.message}
+          </div>
+        )}
 
         {data?.messages?.map((msg) => (
           <div
             key={msg.id}
-            style={{ display: "flex", justifyContent: msg.role === "user" ? "flex-end" : "flex-start", margin: "5px 0" }}
+            style={{
+              display: "flex",
+              justifyContent: msg.role === "user" ? "flex-end" : "flex-start",
+              margin: "5px 0",
+            }}
           >
             <div
               style={{
@@ -123,17 +164,28 @@ export default function Messages({ chatId }) {
                 padding: "8px 12px",
                 borderRadius: "15px",
                 maxWidth: "60%",
-                boxShadow: msg.role === "user" ? "0 2px 4px rgba(0,0,0,0.3)" : "none",
+                boxShadow:
+                  msg.role === "user"
+                    ? "0 2px 4px rgba(0,0,0,0.3)"
+                    : "none",
                 wordBreak: "break-word",
               }}
             >
-              <ReactMarkdown remarkPlugins={[remarkGfm]}>{msg.content}</ReactMarkdown>
+              <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                {msg.content}
+              </ReactMarkdown>
             </div>
           </div>
         ))}
 
         {waitingForResponse && (
-          <div style={{ display: "flex", justifyContent: "flex-start", margin: "5px 0" }}>
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "flex-start",
+              margin: "5px 0",
+            }}
+          >
             <div
               style={{
                 backgroundColor: "#2C2C2C",
@@ -168,7 +220,14 @@ export default function Messages({ chatId }) {
       </div>
 
       {/* Input */}
-      <div style={{ display: "flex", padding: "10px", borderTop: "1px solid #333", flexShrink: 0 }}>
+      <div
+        style={{
+          display: "flex",
+          padding: "10px",
+          borderTop: "1px solid #333",
+          flexShrink: 0,
+        }}
+      >
         <input
           type="text"
           placeholder="Type a message..."
