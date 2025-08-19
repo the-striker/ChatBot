@@ -90,9 +90,6 @@ export default function Messages({ chatId }) {
 
     const contentToSend = messageInput.trim();
     setMessageInput(""); // clear input immediately
-   
-    setResponseTimeout(false);
-    setIsUserMessageSent(true);
 
     // timeout fallback
     timeoutRef.current = setTimeout(() => {
@@ -107,6 +104,8 @@ export default function Messages({ chatId }) {
     if (res?.data?.insert_messages_one?.id) {
       setLastUserMessageId(res.data.insert_messages_one.id);
 	   setWaitingForResponse(true);
+	   setResponseTimeout(false);
+    setIsUserMessageSent(true);
     }
   })
   .catch(console.error);
