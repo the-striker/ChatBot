@@ -55,56 +55,103 @@ export default function ChatList({ onSelectChat, selectedChat }) {
   };
 
   return (
-    <div style={{ 
-      width: "280px", 
-      background: "#1E1E1E", 
-      height: "100vh", 
-      display: "flex", 
-      flexDirection: "column", 
-      color: "#E5E5E5" 
-    }}>
+    <div
+      style={{
+        width: "280px",
+        background: "#202123", // ChatGPT-like sidebar
+        height: "100vh",
+        display: "flex",
+        flexDirection: "column",
+        color: "#ECECEC",
+        borderRight: "1px solid #2A2B32",
+      }}
+    >
       {/* Header */}
-      <div style={{ padding: "12px", borderBottom: "1px solid #333", display: "flex", justifyContent: "space-between" }}>
-        <h3 style={{ margin: 0, fontSize: "16px" }}>💬 Chats</h3>
-        <button 
-          onClick={handleNewChat} 
-          style={{ fontSize: "14px", padding: "4px 8px", cursor: "pointer", background: "#4CAF50", border: "none", color: "#fff", borderRadius: "4px" }}
+      <div
+        style={{
+          padding: "12px",
+          borderBottom: "1px solid #2A2B32",
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          fontSize: "15px",
+          fontWeight: "600",
+        }}
+      >
+        <span>💬 Chats</span>
+        <button
+          onClick={handleNewChat}
+          style={{
+            background: "#343541",
+            border: "1px solid #565869",
+            borderRadius: "6px",
+            color: "#ECECEC",
+            fontSize: "14px",
+            padding: "4px 8px",
+            cursor: "pointer",
+            transition: "background 0.2s, transform 0.1s",
+          }}
+          onMouseEnter={(e) => (e.target.style.background = "#40414F")}
+          onMouseLeave={(e) => (e.target.style.background = "#343541")}
         >
           ➕
         </button>
       </div>
 
       {/* Chat list */}
-	  <div style={{ 
-			flex: 1, // take full height minus header
-			overflowY: "auto" // independent vertical scroll
-		}}>
-      <ul style={{ listStyle: "none", padding: 0, margin: 0 }}>
-        {data.chats.map((chat) => {
-          const isActive = selectedChat === chat.id;
-          return (
-            <li
-              key={chat.id}
-              onClick={() => onSelectChat(chat.id)}
-              style={{
-                borderBottom: "1px solid #333",
-                padding: "10px 12px",
-                cursor: "pointer",
-                backgroundColor: isActive ? "#333" : "transparent",
-                transition: "background-color 0.2s",
-              }}
-            >
-              <div style={{ fontWeight: "500", fontSize: "14px", color: isActive ? "#fff" : "#E5E5E5" }}>
-                {chat.title || "Untitled Chat"}
-              </div>
-              <div style={{ fontSize: "12px", color: isActive ? "#bbb" : "#888" }}>
-                {new Date(chat.created_at).toLocaleString()}
-              </div>
-            </li>
-          );
-        })}
-      </ul>
-	  </div>
+      <div
+        style={{
+          flex: 1,
+          overflowY: "auto",
+        }}
+      >
+        <ul style={{ listStyle: "none", padding: 0, margin: 0 }}>
+          {data.chats.map((chat) => {
+            const isActive = selectedChat === chat.id;
+            return (
+              <li
+                key={chat.id}
+                onClick={() => onSelectChat(chat.id)}
+                style={{
+                  padding: "12px 14px",
+                  cursor: "pointer",
+                  backgroundColor: isActive ? "#343541" : "transparent",
+                  borderLeft: isActive ? "3px solid #10A37F" : "3px solid transparent",
+                  transition: "background-color 0.2s, border-left 0.2s",
+                }}
+                onMouseEnter={(e) =>
+                  !isActive && (e.currentTarget.style.backgroundColor = "#2A2B32")
+                }
+                onMouseLeave={(e) =>
+                  !isActive && (e.currentTarget.style.backgroundColor = "transparent")
+                }
+              >
+                <div
+                  style={{
+                    fontWeight: "500",
+                    fontSize: "14px",
+                    color: "#ECECEC",
+                    whiteSpace: "nowrap",
+                    overflow: "hidden",
+                    textOverflow: "ellipsis",
+                  }}
+                >
+                  {chat.title || "Untitled Chat"}
+                </div>
+                <div
+                  style={{
+                    fontSize: "12px",
+                    color: "#8E8EA0",
+                    marginTop: "2px",
+                  }}
+                >
+                  {new Date(chat.created_at).toLocaleString()}
+                </div>
+              </li>
+            );
+          })}
+        </ul>
+      </div>
     </div>
   );
 }

@@ -105,7 +105,7 @@ export default function Messages({ chatId }) {
       setLastUserMessageId(res.data.insert_messages_one.id);
 	   setWaitingForResponse(true);
 	   setResponseTimeout(false);
-    setIsUserMessageSent(true);
+		setIsUserMessageSent(true);
     }
   })
   .catch(console.error);
