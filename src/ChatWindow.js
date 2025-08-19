@@ -1,6 +1,8 @@
 import { gql, useSubscription, useMutation } from "@apollo/client";
 import {nhost} from "./nhost";
 import { useState, useRef ,useEffect } from "react"; 
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 
 const GET_MESSAGES = gql`
   subscription GetMessages($chat_id: uuid!) {
@@ -78,7 +80,10 @@ return (
       <div style={{ border: "1px solid gray", padding: "10px", height: "300px", overflowY: "scroll" }}>
         {data.messages.map((msg) => (
           <p key={msg.id}>
-            <b>{msg.role === "user" ? "You" : "Bot"}:</b> {msg.content}
+            <b>{msg.role === "user" ? "You" : "Bot"}:</b> 
+			<ReactMarkdown remarkPlugins={[remarkGfm]}>
+        {msg.content}
+      </ReactMarkdown>
           </p>
         ))}
 		{waitingForResponse && <p><i>⏳ Waiting for response...</i></p>}
