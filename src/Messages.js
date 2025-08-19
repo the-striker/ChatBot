@@ -90,14 +90,14 @@ export default function Messages({ chatId }) {
 
     const contentToSend = messageInput.trim();
     setMessageInput(""); // clear input immediately
-    setWaitingForResponse(true);
+   
     setResponseTimeout(false);
     setIsUserMessageSent(true);
 
     // timeout fallback
     timeoutRef.current = setTimeout(() => {
       setResponseTimeout(true);
-    }, 5000);
+    }, 15000);
 
     // send both mutations in parallel
     insertUserMessage({
@@ -106,6 +106,7 @@ export default function Messages({ chatId }) {
   .then((res) => {
     if (res?.data?.insert_messages_one?.id) {
       setLastUserMessageId(res.data.insert_messages_one.id);
+	   setWaitingForResponse(true);
     }
   })
   .catch(console.error);
