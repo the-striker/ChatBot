@@ -7,16 +7,28 @@ function SignUp({ onSignedUp }) {
   const [message, setMessage] = useState('');
 
   const handleSignUp = async (e) => {
-    e.preventDefault();
-    const { error } = await nhost.auth.signUp({ email, password });
+  e.preventDefault();
+  const { session, error } = await nhost.auth.signUp({ email, password });
 
-    if (error) {
-      setMessage(`❌ Error: ${error.message}`);
-    } else {
-      setMessage(`✅ Sign-Up successful! Check your email for verification.`);
-      onSignedUp && onSignedUp();
-    }
-  };
+  if (error) {
+    setMessage(`❌ Error: ${error.message}`);
+    return;
+  }
+
+  if (!session) {
+    // verification required
+    setMessage("✅ Verification link sent! Please check your email.");
+    // Delay before switching to SignIn
+    setTimeout(() => {
+      onSignedUp && onSignedUp("Verification link sent! Please check your email.");
+    }, 2000); // 2s delay
+  } else {
+    // If email verification is disabled, user is logged in immediately
+    setMessage("🎉 Account created and signed in!");
+    onSignedUp && onSignedUp();
+  }
+};
+
 
   return (
     <>

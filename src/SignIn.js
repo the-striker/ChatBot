@@ -1,11 +1,10 @@
 import React, { useState } from 'react';
 import { nhost } from './nhost';
 
-function SignIn({ onSignedIn }) {
+function SignIn({ onSignedIn,initialMessage }) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [message, setMessage] = useState('');
-
+const [message, setMessage] = useState(initialMessage || "");
   const handleSignIn = async (e) => {
     e.preventDefault();
     const { error, session } = await nhost.auth.signIn({ email, password });

@@ -58,7 +58,7 @@ export default function ChatList({ onSelectChat, selectedChat }) {
     <div
       style={{
         width: "280px",
-        background: "#202123", // ChatGPT-like sidebar
+        background: "#202123", 
         height: "100vh",
         display: "flex",
         flexDirection: "column",
